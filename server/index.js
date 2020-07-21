@@ -8,6 +8,7 @@ const db = require('./db')
 const koaBody = require('koa-body')
 const app = new koa()
 const configData = require('./routes/configData')
+const sqls = require('./sql')
 
 // 路由集合
 const articles = require('./routes/articles')
