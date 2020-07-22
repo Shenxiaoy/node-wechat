@@ -3,18 +3,23 @@ const path = require('path')
 const router = require('koa-router')()
 const cors = require('koa2-cors')
 const serve = require('koa-static')
-const ioSend = require('./routes/io-send')
-const db = require('./db')
 const koaBody = require('koa-body')
 const app = new koa()
 const configData = require('./routes/configData')
 const sqls = require('./sql')
 
 // 路由集合
-const articles = require('./routes/articles')
+const commonRouter = require('./routes/common')
+const goodsRouter = require('./routes/goods')
 
-app.use(serve(__dirname + '/static'))
-app.use(koaBody())
+// app.use(serve(__dirname + '/static'))
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    maxFieldsSize: 2* 1024 * 1024,
+    multipart: true
+  }
+}))
 
 // cors 跨域
 app.use(cors({
@@ -36,8 +41,8 @@ app.use(async (ctx, next) => {
     if (!result) {
       ctx.username = ''
     } else {
-      const userInfo = await db.users.findOne({_id: result})
-      ctx.username = userInfo ? userInfo.username : ''
+      // const userInfo = await db.users.findOne({_id: result})
+      // ctx.username = userInfo ? userInfo.username : ''
     }
 
   }
@@ -51,21 +56,8 @@ router.get('/1', async (ctx, next) => {
 
 })
 
-// router.post('/notepanel/main/message', async (ctx, next) => {
-//   const queryData = ctx.request.body
-//   // db.panelNotes.create({title: '我的便签', content: 'test', username: 'sxy'})
-//   // updateOne 不能够创建数据
-//   await db.panelNotes.updateOne({title: queryData.title}, {content: queryData.str})
-//   ctx.response.body = {code: 1, meg: 'success'}
-//
-// })
-// router.get('/notepanel/main/message', async (ctx, next) => {
-//   await db.panelNotes.find({title: '我的便签'}, function (err, data) {
-// 	ctx.response.body = {code: 1, str: data[0].content}
-//   })
-//
-// })
-router.use('/article', articles.routes(), articles.allowedMethods())
+router.use('/common', commonRouter.routes(), commonRouter.allowedMethods())
+router.use('/goods', goodsRouter.routes(), goodsRouter.allowedMethods())
 app.use(router.routes())
 
 app.listen(9101, function () {
