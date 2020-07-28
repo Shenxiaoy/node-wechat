@@ -8,14 +8,14 @@ const resBody = configData.resBody
 
 const accessKey = '9h5kHWHnr20ObcQ45Efmw7Y2J8Dn_0lvl6ch0cTZ'
 const secretKey = '_Dro3CR3xabMhgBloJy0F7Q_Xy50xnW7aYDTPP7H'
-const bucket = 'coooo)'
+const bucket = 'zhousii'
 
 // qiniu 云上传token
 router.get('/token', async (ctx, next) => {
   let mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
   let options = {
    scope: bucket,
-   expires: 3600 * 24
+   expires: 3600 * 24 * 365
   }
   let putPolicy =  new qiniu.rs.PutPolicy(options)
   let uploadToken= putPolicy.uploadToken(mac)

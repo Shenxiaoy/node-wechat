@@ -1,5 +1,5 @@
 const JwtUtil = require('../utils/jwt')
-
+const connection = require('../sql')
 // 登录校验的接口
 const apiCheckList = ['/article/save']
 
@@ -40,15 +40,41 @@ class resBody {
   static error (obj, msg) {
     const init = {
       code: 1,
-      errorMsg: msg || '错误'
+      msg: msg || '错误'
     }
     init.data = obj
     return init
   }
 }
+// sql查询promise
+function sqlQuery (sql) {
+  return new Promise((res, rej) => {
+    connection.query(sql, function (err, content) {
+      if (err) {
+        rej(err)
+      } else {
+        res(content)
+      }
+    })
+  })
+}
+// sql 插入promise
+function sqlInert (sql, obj) {
+  return new Promise((res, rej) => {
+    connection.query(sql, obj, function (err, result, data) {
+      if (err) {
+        rej(err)
+      } else {
+        res(result)
+      }
+    })
+  })
+}
 
 module.exports = {
   isManager,
   loginRealness,
-  resBody
+  resBody,
+  sqlQuery,
+  sqlInert
 }
