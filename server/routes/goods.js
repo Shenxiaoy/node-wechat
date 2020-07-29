@@ -4,14 +4,32 @@ const connection = require('../sql')
 const router = new Router()
 const configData = require('./configData')
 const resBody = configData.resBody
-// const sqlQuery = configData.sqlQuery
 const {sqlQuery, sqlInert} = configData
 
 router.get('/list', async (ctx, next) => {
-  const sql = 'SELECT * FROM goods order by id desc'
+  const request = ctx.request.query
+  let pageNum, pageSize
+  pageNum = request.pageNum || 1
+  pageSize = request.pageSize || 10
+  let queryList = []
+  const queryParams = ['name', 'skuCode']
+  queryParams.forEach(item => {
+    if (request[item]) {
+      if (item === 'skuCode') {
+        queryList.push(`${item}=${request[item]}`)
+        return
+      }
+      queryList.push(`${item}='${request[item]}'`)
+    }
+  })
+  queryList = queryList.length ? `where ${queryList.join(' and ')}` : ''
+  const sqlList = ['SELECT * FROM goods', queryList, 'order by id desc', `limit ${(pageNum - 1) * pageSize},${pageNum * pageSize -1}`]
+  const sql = sqlList.join(' ')
+  console.log(sql, 'sql=====')
   const result = await sqlQuery(sql)
     ctx.response.body = resBody.success({
-      list: result
+      list: result,
+      toalCount: 19
     })
 })
 /**
