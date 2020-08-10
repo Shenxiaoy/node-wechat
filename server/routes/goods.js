@@ -23,14 +23,16 @@ router.get('/list', async (ctx, next) => {
     }
   })
   queryList = queryList.length ? `where ${queryList.join(' and ')}` : ''
+  // 倒叙、分页查询
   const sqlList = ['SELECT * FROM goods', queryList, 'order by id desc', `limit ${(pageNum - 1) * pageSize},${pageNum * pageSize -1}`]
   const sql = sqlList.join(' ')
-  console.log(sql, 'sql=====')
   const result = await sqlQuery(sql)
-    ctx.response.body = resBody.success({
-      list: result,
-      toalCount: 19
-    })
+  const count = await sqlQuery('SELECT count(id) FROM goods')
+  console.log(count, 'count---')
+  ctx.response.body = resBody.success({
+    list: result,
+    totalCount: count
+  })
 })
 /**
  * 添加商品

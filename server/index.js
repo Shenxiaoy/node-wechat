@@ -49,13 +49,6 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// test
-router.get('/1', async (ctx, next) => {
-  ctx.redirect('https://www.baidu.com')
-  ctx.response.body = 'test'
-
-})
-
 router.use('/common', commonRouter.routes(), commonRouter.allowedMethods())
 router.use('/goods', goodsRouter.routes(), goodsRouter.allowedMethods())
 app.use(router.routes())
